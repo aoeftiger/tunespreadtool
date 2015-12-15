@@ -307,10 +307,11 @@ def get_inputs(filenames, params, f_interactive=False, f_verbose=False):
     n_content_lines = get_content_length(filenames[0])
     inputs = {
         "machine": None, "mass": None, "n_part": None,
-        "lshape": None, "emit_geom_x": None, "emit_geom_y": None,
+        "emit_geom_x": None, "emit_geom_y": None,
         "gamma": None, "deltaE": None, "sig_z": None,
-        "coasting": params.get('coasting', False),
         "n_charges_per_part": None,
+        "coasting": params.get('coasting', False),
+        "lshape": params.get('lshape', 1.),
     }
     data = {"s": [], "beta_x": [], "beta_y": [], "d_x": [], "d_y": [] }
     sources = [open(fn, "r") for fn in filenames]

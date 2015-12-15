@@ -40,12 +40,11 @@ def calc_tune_spread(data, inputs, f_verbose=False):
     r = rtimesm * inputs["n_charges_per_part"]**2 / inputs["mass"]
     beta = inputs["beta"]
     gamma = inputs["gamma"]
-    sig_z = inputs.get("sig_z", None)
     n_part = inputs["n_part"]
     deltap = inputs["deltap"]
     emit_x = inputs["emit_geom_x"]
     emit_y = inputs["emit_geom_y"]
-    lshape = inputs["lshape"]
+    lshape = inputs.get("lshape", 1.)
     integx = integy = 0
 
     datalength = len(data["s"]) - 1        # -1 for ds (fencepost error)
@@ -73,7 +72,7 @@ def calc_tune_spread(data, inputs, f_verbose=False):
         shapefactor = lshape / circumference
     else:
         # assume Gaussian shape
-        shapefactor = lshape / (np.sqrt(2.0 * const.pi) * sig_z)
+        shapefactor = lshape / (np.sqrt(2.0 * const.pi) * inputs["sig_z"])
     DeltaQ_x = prefactor * shapefactor * integx
     DeltaQ_y = prefactor * shapefactor * integy
 
