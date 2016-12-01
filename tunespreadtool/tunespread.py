@@ -48,7 +48,7 @@ def calc_tune_spread(data, inputs, f_verbose=False):
     integx = integy = 0
 
     datalength = len(data["s"]) - 1        # -1 for ds (fencepost error)
-    for step in xrange( datalength ):
+    for step in range( datalength ):
         ds = data["s"][step + 1] - data["s"][step]
         beta_x = data["beta_x"][step]
         beta_y = data["beta_y"][step]

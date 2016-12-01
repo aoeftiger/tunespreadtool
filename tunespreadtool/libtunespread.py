@@ -4,6 +4,7 @@ from sys import stdout
 from itertools import product
 import readline
 import argparse
+import six
 
 def parse_main_args(parser):
     parser.add_argument('-i', action='store_true',
@@ -22,7 +23,7 @@ def parse_main_args(parser):
     param_names = add_param_args(parser)
     args = parser.parse_args()
     if args.v:
-        print ''
+        print ('')
         stdout.write(" " * 9 + "progress:\n" + "=" * (9 + 9) + "\n")
     params = {'coasting': args.coasting}
     for pn in param_names:
@@ -112,11 +113,11 @@ def confirm_filenames(filenames):
                                         " separated by semicola:\n\n")
         return [ item.strip() for item in raw_list.split(';') ]
     except:
-        print "Error: faulty input, using %s instead!" % str(filenames)
+        print ("Error: faulty input, using %s instead!" % str(filenames))
         return filenames
     finally:
         readline.set_startup_hook()
-        print ""
+        print ("")
 
 def get_content_length(filename):
     source = open(filename, "r")
@@ -142,7 +143,7 @@ def evaluate_headers(sources, inputs):
             fields = line.split()
             if fields[1] == "SEQUENCE":
                 inputs["machine"] = fields[3].strip('"')
-            for twiss_var, trans in translation.iteritems():
+            for twiss_var, trans in six.iteritems(translation):
                 if fields[1] == twiss_var and not inputs[trans]:
                     inputs[trans] = float(fields[3])
             line = src.readline()
@@ -166,8 +167,8 @@ def parse_cols(col_description_lines):
                        "d_x": ["DX", "DISP1"],
                        "d_y": ["DY", "DISP2"] }
     fields = [line.split() for line in col_description_lines]
-    for var, synonyms in col_madx_names.iteritems():
-        for syn, i_file in product(synonyms, xrange(len(fields))):
+    for var, synonyms in six.iteritems(col_madx_names):
+        for syn, i_file in product(synonyms, range(len(fields))):
             try:
                 # -1 due to additional asterisk field in the line
                 col = fields[i_file].index(syn) - 1
@@ -191,14 +192,14 @@ def advance_to_contents(source):
 
 def fill_data(lines, columns, data):
     fields = [ l.split() for l in lines ]
-    for var, coltuple in columns.iteritems():
+    for var, coltuple in six.iteritems(columns):
         value = fields[ coltuple[0] ][ coltuple[1] ]
         data[var].append( float(value) )
     return data
 
 def confirm_inputs(inputs):
-    print ""
-    for key, value in iter(sorted(inputs.iteritems())):
+    print ("")
+    for key, value in iter(sorted(six.iteritems(inputs))):
         readline.set_startup_hook( lambda: readline.insert_text(str(value)) )
         try:
             if type(value) is float:
@@ -210,7 +211,7 @@ def confirm_inputs(inputs):
         finally:
             readline.set_startup_hook()
         inputs[key] = value
-    print ""
+    print ("")
     return inputs
 
 def check_data_integrity(data, inputs):
@@ -341,7 +342,7 @@ def get_inputs(filenames, params, f_interactive=False, f_verbose=False):
     inputs.update(params)
     if f_interactive:
         inputs = confirm_inputs(inputs)
-    for key, value in inputs.iteritems():
+    for key, value in six.iteritems(inputs):
         # complain if no value is set, ignore sig_z for a coasting beam
         if (value is None) and not (key is 'sig_z' and inputs['coasting']):
             raise NameError(key + " has not been set appropriately!")
@@ -363,28 +364,28 @@ def get_inputs(filenames, params, f_interactive=False, f_verbose=False):
 
 def print_verbose_output(inputs, data, DeltaQ_x, DeltaQ_y):
     heading_param = "      used parameters for the %s:" % inputs["machine"]
-    print heading_param + "\n" + "=" * len(heading_param)
-    print " rest mass of particle [GeV]: %g" % inputs["mass"]
-    print "      # charges per particle: %g" % inputs["n_charges_per_part"]
-    print "          relativistic gamma: %g" % inputs["gamma"]
-    print "number of particles in bunch: %g" % inputs["n_part"]
-    print "rms bunch length sigma_z [m]: %g" % inputs["sig_z"]
-    print "    momentum spread deltap/p: %.6g" % inputs["deltap"]
-    print "  normalized emittance_x [m]: %g" % inputs["emit_norm_x"]
-    print "  normalized emittance_y [m]: %g" % inputs["emit_norm_y"]
-    print "           circumference [m]: %g" % data["s"][-1]
+    print (heading_param + "\n" + "=" * len(heading_param))
+    print (" rest mass of particle [GeV]: %g" % inputs["mass"])
+    print ("      # charges per particle: %g" % inputs["n_charges_per_part"])
+    print ("          relativistic gamma: %g" % inputs["gamma"])
+    print ("number of particles in bunch: %g" % inputs["n_part"])
+    print ("rms bunch length sigma_z [m]: %g" % inputs["sig_z"])
+    print ("    momentum spread deltap/p: %.6g" % inputs["deltap"])
+    print ("  normalized emittance_x [m]: %g" % inputs["emit_norm_x"])
+    print ("  normalized emittance_y [m]: %g" % inputs["emit_norm_y"])
+    print ("           circumference [m]: %g" % data["s"][-1])
     heading_res = "      tune spread due to space charge:"
-    print "\n" + heading_res + "\n" + "=" * len(heading_res)
-    print "        DeltaQ_x = %.6g" % DeltaQ_x
-    print "        DeltaQ_y = %.6g\n" % DeltaQ_y
+    print ("\n" + heading_res + "\n" + "=" * len(heading_res))
+    print ("        DeltaQ_x = %.6g" % DeltaQ_x)
+    print ("        DeltaQ_y = %.6g\n" % DeltaQ_y)
 
 def print_table_output(inputs, data, DeltaQ_x, DeltaQ_y, f_labels):
     if f_labels:
-        print "\t".join(("# N_p ", "B_length [ns] ", "E_kin [GeV] ",
+        print ("\t".join(("# N_p ", "B_length [ns] ", "E_kin [GeV] ",
                             "deltap/p ", "norm emit_x [m] ",
                             "norm emit_y [m] ", "DeltaQ_x ",
-                            "DeltaQ_y" ))
-    print "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g" % (inputs["n_part"],
+                            "DeltaQ_y" )))
+    print ("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g" % (inputs["n_part"],
                         inputs["bunch_length"], inputs["Ekin"],
                         inputs["deltap"], inputs["emit_norm_x"],
-                        inputs["emit_norm_y"], DeltaQ_x, DeltaQ_y)
+                        inputs["emit_norm_y"], DeltaQ_x, DeltaQ_y))
