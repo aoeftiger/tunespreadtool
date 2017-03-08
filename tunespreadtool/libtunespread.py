@@ -157,7 +157,7 @@ def advance_to_col_def(source):
     source.seek(last_pos)
     return source
 
-def parse_cols(col_description_lines):
+def parse_cols(col_description_lines, f_interactive=False):
     columns = dict()
     for line in col_description_lines:
         assert line[0] == "*"
@@ -322,7 +322,8 @@ def get_inputs(filenames, params, f_interactive=False, f_verbose=False):
     inputs = evaluate_headers(sources, inputs)
     for src in sources:
         advance_to_col_def(src)
-    columns = parse_cols( [ src.readline() for src in sources ] )
+    columns = parse_cols([src.readline() for src in sources],
+                         f_interactive=f_interactive)
     for src in sources:
         advance_to_contents(src)
     # twiss file content part
